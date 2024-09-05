@@ -21,7 +21,7 @@ MAIN PROC
         MOV BL, 10                  ; MOV 10 TO FOR DIVISION
         DIV BL                      ; AX/BL, STORE QUOTIENT TO AL & REMAINDER TO AH
               
-        MOV DL, AL                  ; MOVE TENTHS TO DL
+        MOV DL, AL                  ; MOVE TENS TO DL
         ADD DL, '0'      
         CALL DISPLAY_CHAR
         
