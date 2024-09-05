@@ -6,23 +6,13 @@ org 100h
 
 ; add your code here
     MOV AX, 0B800H
-    MOV ES, AX                   ; STORE TO DATA SEGMENT
+    MOV ES, AX                      ; STORE TO DATA SEGMENT
     MOV DI, 0
-    MOV CX, 76                   ; LENGHT OF THE SCREEN
     
-    LEA SI, NUMS
-    MOV CX, 5
+    LEA SI, WORD                    ; LOAD WORD DB INTO SI
+    MOV CX, 11                      ; LENGHT OF WORD
     
-    .ADDITION:
-        ADD BX, [SI]
-        INC SI        
-        MOV BH, 00H
-    LOOP .ADDITION
-    
-    LEA SI, WORD
-    MOV CX, 11        
-     
-    .DISPLAY_WORD: 
+    .DISPLAY_WORD:                  ; DISPLAYS WORD 
         MOV DL, [SI]
         MOV DH, 00001011B   
         MOV ES:[DI], DX
@@ -31,37 +21,63 @@ org 100h
         INC DI
     LOOP .DISPLAY_WORD
     
-    ADD BX, 90H
-    LEA SI, BX
-    MOV CX, 2
+    LEA SI, NUMS                    ; LOAD NUMS DB INTO SI
+    MOV CX, 9                       ; LENGHT OF TOTAL NUMS WITH PLUS SIGN        
 
-    .DISPLAY_SUM: 
+    .DISPLAY_NUMS:                  ; DISPLAYS EACH CHAR IN NUMS WITH SPACE AND PLUS SIGN 
         MOV DL, [SI]
+        ADD BL, DL
+        ADD DL, '0'
         MOV DH, 00001011B   
         MOV ES:[DI], DX
         INC SI
         INC DI
         INC DI
-    LOOP .DISPLAY_SUM
+        
+        DEC CX                      ; DECREMENTS CX AFTER A CHAR IS DISPLAYED
+        JZ .DISPLAY_EQUALS          ; DISPLAYS EQUAL SIGN WHEN CX IS 0
+        CALL .SPACE
+        CALL .PLUS
+        CALL .SPACE     
+    LOOP .DISPLAY_NUMS              ; DECREMENTS CX AFTER EACH LOOP
+    
+    .DISPLAY_EQUALS:                ; DISPLAYS EQUAL SIGN WITH SPACE
+        CALL .SPACE
+        MOV DL, '='
+        MOV DH, 00001011B
+        MOV ES:[DI], DX
+        INC DI
+        INC DI
+        CALL .SPACE
+        
+    .DISPLAY_SUM:                   ; DISPLAY THE SUM OF NUMS (SUPPORTS 0-9 ONLY)
+        MOV DL, BL
+        ADD DL, '0'
+        MOV DH, 00001011B
+        MOV ES:[DI], DX
+        INC SI
+        INC DI
+        INC DI
+        JMP .END       
+    
+    .PLUS:                          ; DISPLAYS PLUS SIGN
+        MOV DL, '+'
+        MOV DH, 00001011B
+        MOV ES:[DI], DX
+        INC DI
+        INC DI
+        RET
+        
+    .SPACE:                         ; DISPLAYS WHITE SPACE
+        MOV DL, ' '
+        MOV DH, 00001011B
+        MOV ES:[DI], DX
+        INC DI
+        INC DI
+        RET     
 
+.END:
 ret
   
 WORD DB 'THE SUM OF '
-NUMS DB 1, 2, 3, 4, 5
-
-;    START:  MOV AX, DATA                   
-;            MOV DS, AX 
-;             
-;            XOR AX, AX                     ;clearing AX
-;            XOR DX, DX                     ;clearing DX
-;            MOV SI, 0                      ;clearing SI  
-;            
-;            MOV CX, 10                     ;updating CX with size of the array
-;            
-; ADDITION:  ADD AX,word ptr ARRAY[SI]      ;adding lower word
-;            ADC DX,word ptr ARRAY[SI+2]    ;adding upper word
-;            ADD SI,4
-;            LOOP ADDITION 
-;            
-;            MOV word ptr SUM, AX           ;storing the lower word in memory
-;            MOV word ptr SUM + 2, DX       ;storing the upper word in memory
+NUMS DB 1, 2, 3, 2, 1
