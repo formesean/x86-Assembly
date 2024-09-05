@@ -9,14 +9,14 @@ MAIN PROC
     MOV ES, AX                      ; STORE TO DATA SEGMENT
     MOV DI, 0
     
-    LEA SI, WORD                    ; LOAD WORD DB INTO SI
-    MOV CX, 11                      ; LENGHT OF WORD
+    ;LEA SI, WORD                    ; LOAD WORD DB INTO SI
+    ;MOV CX, 11                      ; LENGHT OF WORD
     
-    .DISPLAY_WORD:                  ; DISPLAYS WORD 
-        MOV DL, [SI]
-        CALL DISPLAY_CHAR
-        INC SI
-    LOOP .DISPLAY_WORD
+    ;.DISPLAY_WORD:                  ; DISPLAYS WORD 
+    ;    MOV DL, [SI]
+    ;    CALL DISPLAY_CHAR
+    ;    INC SI
+    ;LOOP .DISPLAY_WORD
     
     LEA SI, NUMs                     ; LOAD WORD DB INTO SI
     MOV CX, 5                       ; LENGHT OF NUM ARRAY
@@ -26,7 +26,7 @@ MAIN PROC
     .DISPLAY_DIGIT:                 ; DISPLAYS NUM
         MOV AX, 00H
         MOV AL, [SI]
-        ADD BH, AL
+        ADD SUM, AX
         MOV BL, 10                  ; MOV 10 TO FOR DIVISION
         DIV BL                      ; AX/BL, STORE QUOTIENT TO AL & REMAINDER TO AH
               
@@ -52,12 +52,12 @@ MAIN PROC
         JMP .DISPLAY_DIGIT
         
     .READY_SUM:
-        MOV AL, BH
+        MOV AX, SUM
         MOV CX, 1
         XOR BX, BX
         
         .DISPLAY_SUM:                 ; DISPLAYS NUM
-            MOV AH, 00H 
+            ;MOV AH, 00H 
             MOV BL, 10                  ; MOV 10 TO FOR DIVISION
             DIV BL                      ; AX/BL, STORE QUOTIENT TO AL & REMAINDER TO AH
             MOV BH, AH
@@ -104,4 +104,5 @@ DISPLAY_EQUAL PROC
 DISPLAY_EQUAL ENDP
   
 WORD DB 'THE SUM OF '
-NUMS DB 50, 50, 50, 50, 50
+NUMS DB 50, 50, 50, 50, 60
+SUM DW 0
