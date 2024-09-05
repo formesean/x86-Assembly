@@ -4,6 +4,7 @@
 org 100h
 
 ; add your code here
+MAIN PROC
     MOV AX, 0B800H
     MOV ES, AX                      ; STORE TO DATA SEGMENT
     MOV DI, 0
@@ -13,59 +14,94 @@ org 100h
     
     .DISPLAY_WORD:                  ; DISPLAYS WORD 
         MOV DL, [SI]
-        CALL .DISPLAY
+        CALL DISPLAY_CHAR
         INC SI
     LOOP .DISPLAY_WORD
     
-    LEA SI, NUMS                    ; LOAD NUMS DB INTO SI
-    MOV CX, 9                       ; LENGHT OF TOTAL NUMS WITH PLUS SIGN        
-
-    .DISPLAY_NUMS:                  ; DISPLAYS EACH CHAR IN NUMS WITH SPACE AND PLUS SIGN 
-        MOV DL, [SI]
-        ADD BL, DL
-        ADD DL, '0'
-        CALL .DISPLAY
-        INC SI
-        
-        DEC CX                      ; DECREMENTS CX AFTER A CHAR IS DISPLAYED
-        JZ .DISPLAY_EQUALS          ; DISPLAYS EQUAL SIGN WHEN CX IS 0
-        CALL .SPACE
-        CALL .PLUS
-        CALL .SPACE     
-    LOOP .DISPLAY_NUMS              ; DECREMENTS CX AFTER EACH LOOP
+    LEA SI, NUMs                     ; LOAD WORD DB INTO SI
+    MOV CX, 5                       ; LENGHT OF NUM ARRAY
     
-    .DISPLAY_EQUALS:                ; DISPLAYS EQUAL SIGN WITH SPACE
-        CALL .SPACE
-        MOV DL, '='
-        CALL .DISPLAY
-        CALL .SPACE
-        
-    .DISPLAY_SUM:                   ; DISPLAY THE SUM OF NUMS (SUPPORTS 0-9 ONLY)
-        MOV DL, BL
-        ADD DL, '0'
-        CALL .DISPLAY
-        INC SI
-        JMP .END       
+    XOR BX, BX
     
-    .PLUS:                          ; DISPLAYS PLUS SIGN
-        MOV DL, '+'
-        CALL .DISPLAY
-        RET
+    .DISPLAY_DIGIT:                 ; DISPLAYS NUM
+        MOV AX, 00H
+        MOV AL, [SI]
+        ADD BH, AL
+        MOV BL, 10                  ; MOV 10 TO FOR DIVISION
+        DIV BL                      ; AX/BL, STORE QUOTIENT TO AL & REMAINDER TO AH
+              
+        MOV DL, AL                  ; MOVE TENS TO DL
+        ADD DL, '0'      
+        CALL DISPLAY_CHAR
         
-    .SPACE:                         ; DISPLAYS WHITE SPACE
+        MOV DL, AH                  ; MOVE ONES TO DL
+        ADD DL, '0'      
+        CALL DISPLAY_CHAR
+        
+        DEC CX        
+        JZ DISPLAY_EQUAL
+        
         MOV DL, ' '
-        CALL .DISPLAY
-        RET
-    
-    .DISPLAY:   
-        MOV DH, 00001011B
-        MOV ES:[DI], DX
-        INC DI
-        INC DI
-        RET          
+        CALL DISPLAY_CHAR   
+        MOV DL, '+'
+        CALL DISPLAY_CHAR
+        MOV DL, ' '
+        CALL DISPLAY_CHAR
+        
+        INC SI
+        JMP .DISPLAY_DIGIT
+        
+    .READY_SUM:
+        MOV AL, BH
+        MOV CX, 1
+        XOR BX, BX
+        
+        .DISPLAY_SUM:                 ; DISPLAYS NUM
+            MOV AH, 00H 
+            MOV BL, 10                  ; MOV 10 TO FOR DIVISION
+            DIV BL                      ; AX/BL, STORE QUOTIENT TO AL & REMAINDER TO AH
+            MOV BH, AH
+            MOV AH, 0H
+            DIV BL 
+                  
+            MOV DL, AL                  ; MOVE HUNDREDS TO DL
+            ADD DL, '0'      
+            CALL DISPLAY_CHAR
+            
+            MOV DL, AH                  ; MOVE TENS TO DL
+            ADD DL, '0'      
+            CALL DISPLAY_CHAR
+            
+            MOV DL, BH                  ; MOVE ONES TO DL
+            ADD DL, '0'      
+            CALL DISPLAY_CHAR
+            
+            MOV DL, ' '
+            CALL DISPLAY_CHAR
+            INC SI
+        LOOP .DISPLAY_SUM
+        JMP .END
+.END:           
+    ret
+MAIN ENDP
 
-.END:
-ret
+DISPLAY_CHAR PROC
+    MOV DH, 00001011B
+    MOV ES:[DI], DX
+    INC DI
+    INC DI
+    RET  
+DISPLAY_CHAR ENDP
+
+DISPLAY_EQUAL PROC 
+    MOV DL, ' '
+    CALL DISPLAY_CHAR   
+    MOV DL, '='
+    CALL DISPLAY_CHAR
+    MOV DL, ' '
+    CALL DISPLAY_CHAR
+    JMP .READY_SUM
+DISPLAY_EQUAL ENDP
   
 WORD DB 'THE SUM OF '
-NUMS DB 11, 2, 3, 2, 1
+NUMS DB 50, 50, 50, 50, 50
