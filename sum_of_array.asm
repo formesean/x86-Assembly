@@ -6,35 +6,35 @@ org 100h
 ; add your code here
 MAIN PROC
     MOV AX, 0B800H
-    MOV ES, AX                      ; STORE TO DATA SEGMENT
-    MOV DI, 0
+    MOV ES, AX                          ; STORE TO DATA SEGMENT
+    MOV DI, 0                           
     
-    ;LEA SI, WORD                    ; LOAD WORD DB INTO SI
-    ;MOV CX, 11                      ; LENGHT OF WORD
+    LEA SI, WORD                        ; LOAD WORD DB INTO SI
+    MOV CX, 11                          ; LENGHT OF WORD
     
-    ;.DISPLAY_WORD:                  ; DISPLAYS WORD 
-    ;    MOV DL, [SI]
-    ;    CALL DISPLAY_CHAR
-    ;    INC SI
-    ;LOOP .DISPLAY_WORD
+    .DISPLAY_WORD:                      ; DISPLAYS WORD 
+        MOV DL, [SI]
+        CALL DISPLAY_CHAR
+        INC SI
+    LOOP .DISPLAY_WORD
     
-    LEA SI, NUMs                     ; LOAD WORD DB INTO SI
-    MOV CX, 5                       ; LENGHT OF NUM ARRAY
+    LEA SI, NUMs                        ; LOAD WORD DB INTO SI
+    MOV CX, 5                           ; LENGHT OF NUM ARRAY
     
     XOR BX, BX
     
-    .DISPLAY_DIGIT:                 ; DISPLAYS NUM
+    .DISPLAY_DIGIT:                     ; DISPLAYS NUM
         MOV AX, 00H
         MOV AL, [SI]
-        ADD SUM, AX
-        MOV BL, 10                  ; MOV 10 TO FOR DIVISION
-        DIV BL                      ; AX/BL, STORE QUOTIENT TO AL & REMAINDER TO AH
+        ADD SUM, AX                     ; STORE THE SUM INTO SUM VAR
+        MOV BL, 10                      ; MOV 10 TO FOR DIVISION
+        DIV BL                          ; AX/BL, STORE QUOTIENT TO AL & REMAINDER TO AH
               
-        MOV DL, AL                  ; MOVE TENS TO DL
+        MOV DL, AL                      ; MOVE TENS TO DL
         ADD DL, '0'      
         CALL DISPLAY_CHAR
         
-        MOV DL, AH                  ; MOVE ONES TO DL
+        MOV DL, AH                      ; MOVE ONES TO DL
         ADD DL, '0'      
         CALL DISPLAY_CHAR
         
@@ -52,12 +52,11 @@ MAIN PROC
         JMP .DISPLAY_DIGIT
         
     .READY_SUM:
-        MOV AX, SUM
-        MOV CX, 1
+        MOV AX, SUM                     ; LOAD VALUE OF SUM VAR INTO AX
+        MOV CX, 1                       ; LENGTH OF SUM
         XOR BX, BX
         
-        .DISPLAY_SUM:                 ; DISPLAYS NUM
-            ;MOV AH, 00H 
+        .DISPLAY_SUM:                   ; DISPLAYS NUM
             MOV BL, 10                  ; MOV 10 TO FOR DIVISION
             DIV BL                      ; AX/BL, STORE QUOTIENT TO AL & REMAINDER TO AH
             MOV BH, AH
@@ -85,7 +84,7 @@ MAIN PROC
     ret
 MAIN ENDP
 
-DISPLAY_CHAR PROC
+DISPLAY_CHAR PROC                       ; SUB ROUTINE TO DISPLAY A CHARACTER
     MOV DH, 00001011B
     MOV ES:[DI], DX
     INC DI
@@ -93,7 +92,7 @@ DISPLAY_CHAR PROC
     RET  
 DISPLAY_CHAR ENDP
 
-DISPLAY_EQUAL PROC 
+DISPLAY_EQUAL PROC                      ; SUB ROUTINE TO DISPLAY EQUAL SIGN 
     MOV DL, ' '
     CALL DISPLAY_CHAR   
     MOV DL, '='
@@ -104,5 +103,5 @@ DISPLAY_EQUAL PROC
 DISPLAY_EQUAL ENDP
   
 WORD DB 'THE SUM OF '
-NUMS DB 50, 50, 50, 50, 60
+NUMS DB 55 55, 55, 55, 55
 SUM DW 0
