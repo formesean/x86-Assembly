@@ -5,7 +5,7 @@ org 100h
     INT 21H
     
     MOV BX, 2
-    
+
     CALL GET_INPUT    
     CALL NEW_LINE
     
@@ -16,12 +16,20 @@ ret
 PASSWORD_CHECKER:
     LEA SI, PASSWORD
     LEA DI, INPUT+2
-    MOV AL, [SI]
-    MOV BL, [DI]
+    MOV CL, INPUT[1]
     
-    CMP AL, BL
-    JNE ERROR_PROMPT
-    CALL SUCCESS_PROMPT  
+    COMPARE:
+        MOV AL, [SI]
+        MOV BL, [DI]
+        
+        CMP AL, BL
+        JNE ERROR_PROMPT
+        
+        INC SI
+        INC DI
+    LOOP COMPARE
+    
+    CALL SUCCESS_PROMPT
     
     RET
     
