@@ -1,11 +1,18 @@
 org 100h
 
-    LEA DX, MSG_PROMPT
+    LEA DX, MSG1_PROMPT
     MOV AH, 9
     INT 21H
     
     MOV BX, 2
-
+    CALL GET_PASSWORD    
+    CALL NEW_LINE
+    
+    LEA DX, MSG2_PROMPT
+    MOV AH, 9
+    INT 21H
+    
+    MOV BX, 2
     CALL GET_INPUT    
     CALL NEW_LINE
     
@@ -14,21 +21,24 @@ org 100h
 ret
 
 PASSWORD_CHECKER:
-    LEA SI, PASSWORD
+    XOR AX, AX
+    XOR CX, CX
+    LEA SI, PASSWORD+2
     LEA DI, INPUT+2
-    MOV CL, INPUT[1]
+    MOV CL, PASSWORD[1]
     
-    COMPARE:
-        MOV AL, [SI]
-        MOV BL, [DI]
-        
-        CMP AL, BL
-        JNE ERROR_PROMPT
-        
-        INC SI
-        INC DI
+COMPARE:
+    MOV AL, [SI]
+    MOV BL, [DI]
+    
+    CMP AL, BL
+    JNE ERROR_PROMPT
+    
+    INC SI
+    INC DI
+
     LOOP COMPARE
-    
+
     CALL SUCCESS_PROMPT
     
     RET
@@ -47,6 +57,26 @@ ERROR_PROMPT:
     
     RET
 
+GET_PASSWORD:
+    MOV AH, 7
+    INT 21H
+    
+    CMP AL, 13
+    JE END_PASSWORD
+    
+    MOV [PASSWORD+BX], AL
+    INC BX
+    INC PASSWORD[1]
+    MOV AH, 2
+    MOV DL, '*'
+    INT 21H
+    
+    
+    JMP GET_PASSWORD
+    
+    END_PASSWORD:
+        RET
+
 GET_INPUT:
     MOV AH, 7
     INT 21H
@@ -55,12 +85,14 @@ GET_INPUT:
     JE END_INPUT
     
     MOV [INPUT+BX], AL
+    INC BX
+    INC INPUT[1]
     MOV AH, 2
     MOV DL, '*'
     INT 21H
     
-    INC BX
-    LOOP GET_INPUT
+    
+    JMP GET_INPUT
     
     END_INPUT:
         RET
@@ -83,8 +115,9 @@ EXIT:
     MOV AH, 4CH
     INT 21H    
 
-MSG_PROMPT DB 'ENTER PASSWORD: $'
+MSG1_PROMPT DB 'ENTER A NEW PASSWORD: $'
+MSG2_PROMPT DB 'ENTER PASSWORD: $'
 SUCCESS_MSG DB 'Access Granted!$'
 ERROR_MSG DB 'Access Denied!$' 
 INPUT DB 15, ?, 15 DUP(?)
-PASSWORD DB 'SEAN'
+PASSWORD DB 15, ?, 15 DUP(?)
