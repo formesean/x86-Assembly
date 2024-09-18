@@ -23,9 +23,30 @@ org 100h
         INT 21H
         
         POP DX
+        PUSH DX
+        CALL SET_CURSOR_POS
+        LEA DX, BLANK
+        MOV AH, 9
+        INT 21H
+        
+        POP DX
         INC DH
-        LOOP DISPLAY         
-           
+        LOOP DISPLAY
+                 
+    MOV AL, 1
+    MOV BL, 07H
+    MOV BH, 0
+    MOV CL, INPUT[1]  
+    MOV DL, 40
+    SUB DL, INPUT[1]
+    MOV DH, 24 
+    
+    PUSH DS
+    POP ES
+    LEA BP, INPUT+2
+    MOV AH, 13H
+    INT 10H
+               
 ret
 
 SET_CURSOR_POS:
@@ -67,3 +88,4 @@ EXIT:
 
 MSG_PROMPT DB 'ENTER A ODD STRING: $' 
 INPUT DB 15, ?, 15 DUP(?)
+BLANK DB '                $'
