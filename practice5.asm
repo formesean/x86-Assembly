@@ -78,10 +78,12 @@ org 100h
         LOOP STR_LOOP2
     
     MOV CX, 38
-    MOV BX, 40
     MOV DI, 3916
+    MOV BX, 3920 
     
-    STR_LOOP3:
+    AWAY:
+        CMP CX, 0
+        JE CONT2
         MOV DL, INPUT[2]
         MOV DH, 00H
         MOV ES:[DI], DX
@@ -89,12 +91,10 @@ org 100h
         MOV DL, INPUT[2]
         MOV DH, 07H
         MOV ES:[DI], DX
-        LOOP STR_LOOP3 
-   
-    MOV CX, 39
-    MOV DI, 3920
-    
-    STR_LOOP4:
+        
+        PUSH DI
+        MOV DI, BX
+        
         MOV DL, INPUT[4]
         MOV DH, 00H
         MOV ES:[DI], DX
@@ -102,9 +102,23 @@ org 100h
         MOV DL, INPUT[4]
         MOV DH, 07H
         MOV ES:[DI], DX
-    LOOP STR_LOOP4
-
- MOV CX, 24
+        
+        MOV BX, DI
+        POP DI
+        PUSH DX
+        LOOP AWAY
+    
+    CONT2:
+    MOV DI, BX
+    MOV DL, INPUT[4]
+    MOV DH, 00H
+    MOV ES:[DI], DX
+    ADD DI, 2
+    MOV DL, INPUT[4]
+    MOV DH, 07H
+    MOV ES:[DI], DX
+    
+    MOV CX, 24
     MOV DI, 3840
     
     ; MOVE LEFT CHARACTER UPWARDS
@@ -134,9 +148,11 @@ org 100h
     
     MOV CX, 38
     MOV DI, 0
-    
-    ; MOVE LEFT CHARACTER RIGHT
-    STR_LOOP7:
+    MOV BX, 160
+        
+    INWARDS:
+        CMP CX, 0
+        JE CONT2
         MOV DL, INPUT[2]
         MOV DH, 00H
         MOV ES:[DI], DX
@@ -144,13 +160,10 @@ org 100h
         MOV DL, INPUT[2]
         MOV DH, 07H
         MOV ES:[DI], DX
-    LOOP STR_LOOP7
-    
-    MOV CX, 40
-    MOV DI, 160
-    
-    ; MOVE RIGHT CHARACTER LEFT
-    STR_LOOP8:
+        
+        PUSH DI
+        MOV DI, BX
+        
         MOV DL, INPUT[4]
         MOV DH, 00H
         MOV ES:[DI], DX
@@ -158,9 +171,26 @@ org 100h
         MOV DL, INPUT[4]
         MOV DH, 07H
         MOV ES:[DI], DX
-    LOOP STR_LOOP8   
-        
                 
+        MOV BX, DI
+        POP DI
+        PUSH DX
+        LOOP INWARDS
+        
+    MOV CX, 2
+    MOV DI, BX 
+    
+    MORE:     
+        MOV DL, INPUT[4]
+        MOV DH, 00H
+        MOV ES:[DI], DX
+        SUB DI, 2
+        MOV DL, INPUT[4]
+        MOV DH, 07H
+        MOV ES:[DI], DX
+        LOOP MORE
+        
+    JMP EXIT                
 ret
 
 SET_CURSOR_POS:
