@@ -10,14 +10,41 @@ org 100h
     
     CALL GET_INPUT    
     CALL NEW_LINE
-    CALL INIT
-    CALL CHECK
     
-    CONT2:
     CALL INIT
+    MOV AL, NUM1
+    CALL CHECK_AND_CONVERT    
+    CALL TO_BINARY
     
-    CALL TO_BINARY    
+    CALL INIT
+    MOV AL, ' '
+    CALL DISPLAY_CHAR
+    
+    CALL INIT 
+    MOV AL, NUM2
+    CALL CHECK_AND_CONVERT    
+    CALL TO_BINARY 
+       
     LEA DX, MSG2
+    MOV AH, 9
+    INT 21H
+    
+    CALL NEW_LINE
+    CALL INIT
+    CALL TO_OCTAL
+    
+    CALL INIT
+    MOV DL, TEMP[0]
+    ADD DL, '0'
+    CALL DISPLAY_CHAR
+    MOV DL, TEMP[1]
+    ADD DL, '0'
+    CALL DISPLAY_CHAR
+    MOV DL, TEMP[2]
+    ADD DL, '0'
+    CALL DISPLAY_CHAR
+    
+    LEA DX, MSG3
     MOV AH, 9
     INT 21H
 
@@ -33,144 +60,114 @@ GET_INPUT:
 
     RET
 
-CHECK:
-    CMP NUM1, 'A'
-    JE CONVERTA1
-    CMP NUM1, 'B'
-    JE CONVERTB1
-    CMP NUM1, 'C'
-    JE CONVERTC1 
-    CMP NUM1, 'D'
-    JE CONVERTD1 
-    CMP NUM1, 'E'
-    JE CONVERTE1
-    CMP NUM1, 'F'
-    JE CONVERTF1
+CHECK_AND_CONVERT:
+    CMP AL, 'A'
+    JL NOT_HEX
+    CMP AL, 'F'
+    JG NOT_HEX
+    SUB AL, 37h
     
-    CONT1: 
-    CMP NUM2, 'A'
-    JE CONVERTA2
-    CMP NUM2, 'B'
-    JE CONVERTB2
-    CMP NUM2, 'C'
-    JE CONVERTC2 
-    CMP NUM2, 'D'
-    JE CONVERTD2 
-    CMP NUM2, 'E'
-    JE CONVERTE2
-    CMP NUM2, 'F'
-    JE CONVERTF2
-    RET   
+    RET
 
-CONVERTA1:
-    MOV NUM1, 10
-    JMP CONT1
+NOT_HEX:
+    SUB AL, '0'
+    RET
+
+TO_BINARY:
+    MOV BX, 2
+    
+    DIVIDE_B:
+        DIV BL
+        MOV DL, AH
+        XOR AH, AH
+        PUSH DX
+        INC CX
+        CMP CX, 4
+        JNE DIVIDE_B
+    
+    XOR CX, CX
         
-CONVERTB1:
-    MOV NUM1, 11
-    JMP CONT1    
+    DISPLAY_B:
+        POP DX
+        ADD DX, '0'
+        CALL DISPLAY_CHAR
+        INC CX
+        CMP CX, 4
+        JNE DISPLAY_B
+        
+    RET                
+
+TO_OCTAL:
+    MOV AL, NUM2
+    CALL CHECK_AND_CONVERT
+    MOV BX, 2
     
-CONVERTC1:
-    MOV NUM1, 12
-    JMP CONT1
-
-CONVERTD1:
-    MOV NUM1, 13
-    JMP CONT1
-
-CONVERTE1:
-    MOV NUM1, 14
-    JMP CONT1
-
-CONVERTF1:
-    MOV NUM1, 15
-    JMP CONT1
-
-CONVERTA2:
-    MOV NUM2, 10
-    JMP CONT2
-
-CONVERTB2:
-    MOV NUM2, 11
-    JMP CONT2    
+    DIVIDE_O2:
+        DIV BL
+        MOV DL, AH
+        XOR AH, AH
+        PUSH DX
+        INC CX
+        CMP CX, 4
+        JNE DIVIDE_O2
+        
+    CALL INIT
     
-CONVERTC2:
-    MOV NUM2, 12
-    JMP CONT2
-
-CONVERTD2:
-    MOV NUM2, 13
-    JMP CONT2
-
-CONVERTE2:
-    MOV NUM2, 14
-    JMP CONT2
-
-CONVERTF2:
-    MOV NUM2, 15
-    JMP CONT2
+    MOV AL, NUM1
+    CALL CHECK_AND_CONVERT
+    MOV BX, 2
+    
+    DIVIDE_O1:
+        DIV BL
+        MOV DL, AH
+        XOR AH, AH
+        PUSH DX
+        INC CX
+        CMP CX, 4
+        JNE DIVIDE_O1
+        
+    CALL INIT
+    
+    POP AX
+    MOV BL, 2
+    MUL BL
+    MOV BH, AL
+    POP AX
+    ADD AL, BH
+    MOV TEMP[0], AL
+    
+    POP AX
+    MOV BL, 4
+    MUL BL
+    MOV BH, AL
+    POP AX
+    MOV BL, 2
+    MUL BL
+    ADD BH, AL
+    POP AX
+    ADD AL, BH
+    MOV TEMP[1], AL
+    
+    POP AX
+    MOV BL, 4
+    MUL BL
+    MOV BH, AL
+    POP AX
+    MOV BL, 2
+    MUL BL
+    ADD BH, AL
+    POP AX
+    ADD AL, BH
+    MOV TEMP[2], AL
+    
+    RET
 
 INIT:
     XOR AX, AX
     XOR BX, BX
     XOR CX, CX
     XOR DX, DX
-    RET
-
-TO_BINARY:
-    MOV AL, NUM1
-    SUB AL, '0'
-    MOV BL, 2
-    
-    DIVIDE:
-        DIV BL
-        MOV DL, AH
-        XOR AH, AH
-        PUSH DX
-        INC CX
-        CMP CX, 4
-        JNE DIVIDE
-        
-    XOR CX, CX
-        
-    DISPLAY:
-        POP DX
-        ADD DX, '0'
-        CALL DISPLAY_CHAR
-        INC CX
-        CMP CX, 4
-        JNE DISPLAY
-    
-    MOV DL, ' '
-    CALL DISPLAY_CHAR
-    CALL CHECK
-        
-    CALL INIT
-        
-    MOV AL, NUM2
-    SUB AL, '0'
-    MOV BL, 2
-    
-    DIVIDE2:
-        DIV BL
-        MOV DL, AH
-        XOR AH, AH
-        PUSH DX
-        INC CX
-        CMP CX, 4
-        JNE DIVIDE2
-        
-    XOR CX, CX
-        
-    DISPLAY2:
-        POP DX
-        ADD DX, '0'
-        CALL DISPLAY_CHAR
-        INC CX
-        CMP CX, 4
-        JNE DISPLAY2
-        
-    RET                
+    RET   
 
 DISPLAY_CHAR:
     MOV AH, 2
@@ -191,11 +188,8 @@ EXIT:
     INT 21H    
 
 MSG1 DB 'Input hexadecimal value: $' 
-MSG2 DB ' in binary$'
-MSG3 DB ' in octal$'
-NUM DB 10, ?, 10 DUP(?)
+MSG2 DB 'b in binary$'
+MSG3 DB 'o in octal$'
 NUM1 DB ?
 NUM2 DB ?
-
-
-
+TEMP DB ?, ?, ?
