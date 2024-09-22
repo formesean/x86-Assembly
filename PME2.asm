@@ -13,7 +13,21 @@ org 100h
     INT 21H
     
     CALL NEW_LINE
+    CALL NEW_LINE 
+    CALL NEW_LINE 
+    CALL COUNT_VOWELS
     
+    MOV AL, VOW_A
+    ADD VOW_TOTAL, AL
+    MOV AL, VOW_E    
+    ADD VOW_TOTAL, AL
+    MOV AL, VOW_I    
+    ADD VOW_TOTAL, AL
+    MOV AL, VOW_O    
+    ADD VOW_TOTAL, AL
+    MOV AL, VOW_U    
+    ADD VOW_TOTAL, AL
+        
     MOV BL, INPUT[1]
     MOV LEN, BL
     XOR BX, BX
@@ -27,19 +41,6 @@ org 100h
     INT 21H
 
     CALL NEW_LINE   
-    CALL COUNT_VOWELS
-    
-    MOV AL, VOW_A
-    ADD VOW_TOTAL, AL
-    MOV AL, VOW_E    
-    ADD VOW_TOTAL, AL
-    MOV AL, VOW_I    
-    ADD VOW_TOTAL, AL
-    MOV AL, VOW_O    
-    ADD VOW_TOTAL, AL
-    MOV AL, VOW_U    
-    ADD VOW_TOTAL, AL
-    
     CALL NEW_LINE
     LEA SI, VOW_A
     MOV CX, 1
@@ -48,7 +49,9 @@ org 100h
     LEA DX, MSG3
     MOV AH, 9
     INT 21H
+    CALL DISPLAY_APS
     
+    CALL NEW_LINE 
     CALL NEW_LINE
     LEA SI, VOW_E
     MOV CX, 1
@@ -56,8 +59,10 @@ org 100h
 
     LEA DX, MSG4
     MOV AH, 9
-    INT 21H      
+    INT 21H
+    CALL DISPLAY_APS      
     
+    CALL NEW_LINE 
     CALL NEW_LINE
     LEA SI, VOW_I
     MOV CX, 1
@@ -65,8 +70,10 @@ org 100h
 
     LEA DX, MSG5
     MOV AH, 9
-    INT 21H      
+    INT 21H 
+    CALL DISPLAY_APS     
     
+    CALL NEW_LINE 
     CALL NEW_LINE
     LEA SI, VOW_O
     MOV CX, 1
@@ -74,8 +81,10 @@ org 100h
 
     LEA DX, MSG6
     MOV AH, 9
-    INT 21H     
+    INT 21H 
+    CALL DISPLAY_APS    
     
+    CALL NEW_LINE 
     CALL NEW_LINE
     LEA SI, VOW_U
     MOV CX, 1
@@ -84,7 +93,10 @@ org 100h
     LEA DX, MSG7
     MOV AH, 9
     INT 21H
+    CALL DISPLAY_APS
     
+    CALL NEW_LINE 
+    CALL NEW_LINE 
     CALL NEW_LINE
     LEA SI, VOW_TOTAL
     MOV CX, 1
@@ -94,6 +106,7 @@ org 100h
     MOV AH, 9
     INT 21H     
     
+    CALL NEW_LINE 
     CALL NEW_LINE
     LEA SI, CON_TOTAL
     MOV CX, 1
@@ -202,6 +215,13 @@ DISPLAY_2DIGIT:
     LOOP DISPLAY_2DIGIT
     RET
 
+DISPLAY_APS:
+    MOV DL, 39
+    CALL DISPLAY_CHAR
+    MOV DL, 's'
+    CALL DISPLAY_CHAR
+    RET
+
 DISPLAY_CHAR:
     MOV AH, 2
     INT 21H
@@ -224,11 +244,11 @@ EXIT:
 MSG DB 'Input string [max. 20]: $'
 INPUT DB 20, ?, 20 DUP(?)
 MSG2 DB '- chars inputted$'
-MSG3 DB '- a-s$'
-MSG4 DB '- e-s$'
-MSG5 DB '- i-s$'
-MSG6 DB '- o-s$'
-MSG7 DB '- u-s$'
+MSG3 DB '- a$'
+MSG4 DB '- e$'
+MSG5 DB '- i$'
+MSG6 DB '- o$'
+MSG7 DB '- u$'
 MSG8 DB '- total vowels$'
 MSG9 DB '- total consonants$'
 LEN DB ?
