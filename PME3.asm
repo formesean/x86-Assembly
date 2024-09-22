@@ -10,6 +10,7 @@ org 100h
     
     CALL GET_INPUT    
     CALL NEW_LINE
+    CALL NEW_LINE
     
     CALL INIT
     MOV AL, NUM1
@@ -29,6 +30,7 @@ org 100h
     MOV AH, 9
     INT 21H
     
+    CALL NEW_LINE
     CALL NEW_LINE
     CALL INIT
     CALL TO_OCTAL
