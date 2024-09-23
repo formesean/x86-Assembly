@@ -7,8 +7,8 @@ org 100h
     MOV SI, 02H
     MOV DI, 04H
     MOV AX, 0004H
-    MOV BX, [AX+SI+08]
+    MOV BX, [AX+SI+08H]
     MOV CX, 0000H
-    MOV DX, [AX+DI+08]    
+    MOV DX, [AX+DI+08H]    
 
 ret
