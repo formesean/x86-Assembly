@@ -131,8 +131,7 @@ START:
       MOV BL, AL
       
       CMP BL, 63H	; check if BL is greater than '99'
-      JO IS_3HEX
-      JG IS_3HEX
+      JA IS_3HEX
       
       XOR AX, AX 
       MOV AL, BL
