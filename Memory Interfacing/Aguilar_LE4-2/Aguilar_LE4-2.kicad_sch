@@ -1,0 +1,130 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "f2047f1e-4cb6-40f4-a8c8-5a3265cf4fb4")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 127 25.4)
+		(size 12.7 3.81)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "13c14599-d031-48ee-8461-fdaf2f7c663f")
+		(property "Sheetname" "Aguilar_LE4-2_3"
+			(at 127 24.6884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "D:/x86-Assembly/Memory Interfacing/Aguilar_LE4-2/Aguilar_LE4-2_3.kicad_sch"
+			(at 127 29.7946 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "Aguilar_LE4-2"
+				(path "/f2047f1e-4cb6-40f4-a8c8-5a3265cf4fb4"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 25.4 25.4)
+		(size 12.7 3.81)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "289f5e71-e4fe-48f4-98eb-7429ea925d70")
+		(property "Sheetname" "Aguilar_LE4-2_1"
+			(at 25.4 24.6884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "D:/x86-Assembly/Memory Interfacing/Aguilar_LE4-2/Aguilar_LE4-2_1.kicad_sch"
+			(at 25.4 29.7946 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "Aguilar_LE4-2"
+				(path "/f2047f1e-4cb6-40f4-a8c8-5a3265cf4fb4"
+					(page "1")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 76.2 25.4)
+		(size 12.7 3.81)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "8d3c4738-3072-4504-b605-a32541d149bd")
+		(property "Sheetname" "Aguilar_LE4-2_2"
+			(at 76.2 24.6884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "D:/x86-Assembly/Memory Interfacing/Aguilar_LE4-2/Aguilar_LE4-2_2.kicad_sch"
+			(at 76.2 29.7946 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "Aguilar_LE4-2"
+				(path "/f2047f1e-4cb6-40f4-a8c8-5a3265cf4fb4"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
