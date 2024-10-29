@@ -9,59 +9,60 @@
 ; in the 8086 model properties to 0xF0000
 ;====================================================================
 
-PROCED1 SEGMENT
-   ISR1 PROC FAR
-      ASSUME CS:PROCED1, DS:DATA
-      ORG 01000H ; write code within below starting at address 08000H
-	 PUSHF ; push 16-bit operands
-	 PUSH AX ; save program context
-	 PUSH DX
-	 ;<write the ISR code here>
-	 MOV DX, PORTA
-	 MOV AL, 00001001B
-	 OUT DX, AL
-	 ; end of ISR code
-	 POP DX ; retrieve program context
-	 POP AX
-	 POPF ; pop 16-bit operands
-	 IRET ; return from interrupt
-   ISR1 ENDP ; end of procedure
+PROCED1 SEGMENT 'CODE'
+ISR1 PROC FAR
+ASSUME CS:PROCED1, DS:DATA
+ORG 01000H ; write code within below starting at address 08000H
+   PUSHF ; push 16-bit operands
+   PUSH AX ; save program context
+   PUSH DX
+   ;<write the ISR code here>
+   MOV DX, PORTA
+   MOV AL, 09H
+   OUT DX, AL
+   ; end of ISR code
+   POP DX ; retrieve program context
+   POP AX
+   POPF ; pop 16-bit operands
+   IRET ; return from interrupt
+ISR1 ENDP ; end of procedure
 PROCED1 ENDS
 
-PROCED2 SEGMENT
-   ISR2 PROC FAR
-   ASSUME CS:PROCED2, DS:DATA
-   ORG 02000H ; write code within below starting at address 09000H
-      PUSHF ; push 16-bit operands
-      PUSH AX ; save program context
-      PUSH DX
-      ;<write the ISR code here>
-      MOV DX, PORTA
-      MOV AL, 00000000B
-      OUT DX, AL
-      ; end of ISR code
-      POP DX ; retrieve program context
-      POP AX
-      POPF ; pop 16-bit operands
-      IRET ; return from interrupt
-   ISR2 ENDP ; end of procedure
+PROCED2 SEGMENT 'CODE'
+ISR2 PROC FAR
+ASSUME CS:PROCED2, DS:DATA
+ORG 02000H ; write code within below starting at address 09000H
+   PUSHF ; push 16-bit operands
+   PUSH AX ; save program context
+   PUSH DX
+   ;<write the ISR code here>
+   MOV DX, PORTA
+   MOV AL, 00H
+   OUT DX, AL
+   ; end of ISR code
+   POP DX ; retrieve program context
+   POP AX
+   POPF ; pop 16-bit operands
+   IRET ; return from interrupt
+ISR2 ENDP ; end of procedure
 PROCED2 ENDS
 
 DATA SEGMENT
+ORG 03000H
    PORTA EQU 0F0H
    PORTB EQU 0F2H
    PORTC EQU 0F4H
    COM_REG EQU 0F6H
    PIC1 EQU 0F8H
    PIC2 EQU 0FAH
-   ICW1 EQU 13H
-   ICW2 EQU 80H
-   ICW4 EQU 03H
+   ICW1 EQU 013H
+   ICW2 EQU 080H
+   ICW4 EQU 003H
    OCW1 EQU 0FCH
 DATA ENDS
 
-STK SEGMENT
-   BOS DW 64d DUP(?)
+STK SEGMENT STACK
+   BOS DW 64d DUP (?)
    TOS LABEL WORD
 STK ENDS
 
@@ -80,7 +81,7 @@ START:
    
    ;program the 8255
    MOV DX, COM_REG
-   MOV AL, 10001001B
+   MOV AL, 10000001B
    OUT DX, AL
 
    ;program the 8259
@@ -116,12 +117,13 @@ START:
       CMP AL, 09H
       JLE DISPLAY
       MOV AL, 00H
+      JMP HERE
       
    DISPLAY:
-      MOV DX, PORTA
+      MOV DX, PORTB
       MOV AH, 00H
-      OUT DX, AL
-
+      OUT DX, AL	
       JMP HERE
+   
 CODE ENDS
-END START 
+END START
