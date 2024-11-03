@@ -35,6 +35,7 @@ ORG 01000H ; write code within below starting at address 08000H
    
    ;CALL FAR PTR TESTING
    MOV ISR1_FLAG, 1
+   ;MOV ISR2_FLAG, 1
    MOV PRESS_COUNT, 0
    ; end of ISR code
    
@@ -55,7 +56,8 @@ ORG 02000H ; write code within below starting at address 09000H
    PUSH DX
    
    ;<write the ISR code here> 
-   CALL FAR PTR EMERGENCY
+   ;CALL FAR PTR EMERGENCY
+   MOV ISR2_FLAG, 1
    ; end of ISR code
 
    POP DX ; retrieve program context
@@ -91,6 +93,7 @@ ORG 03000H
    
    PRESS_COUNT DB 0
    ISR1_FLAG DB 0
+   ISR2_FLAG DB 0
    
    MENU1 DB "[1] Coke Large","$"
    MENU2 DB "[2] Coke Medium","$"
@@ -98,7 +101,7 @@ ORG 03000H
    MENU4 DB "[4] Sprite Medium  ","$"
    MSG1 DB "Dispensing...","$"
    MSG2 DB "  S  ","$"
-   MSG3 DB "Enjoy your drink! ","$"
+   MSG3 DB "Enjoy your drink!  ","$"
    MSG4 DB "Testing valves... ","$"
    MSG5 DB "Emergency Stop! ","$"
 DATA ENDS
@@ -354,34 +357,48 @@ START:
       CALL DISPLAY_STR
       XOR CX, CX
       
+      CMP ISR2_FLAG, 1
+      JE EMERGENCY
       MOV BL, 01H
       MOV CX, 01H
       MOV DX, PORTD
       MOV AL, 0001B
       CALL LED_CTRL
       
+      CMP ISR2_FLAG, 1
+      JE EMERGENCY
       MOV CX, 01H
       MOV DX, PORTD
       MOV AL, 0010B
       CALL LED_CTRL
       
+      CMP ISR2_FLAG, 1
+      JE EMERGENCY
       MOV CX, 01H
       MOV DX, PORTD
       MOV AL, 0100B
       CALL LED_CTRL
       
+      CMP ISR2_FLAG, 1
+      JE EMERGENCY
       MOV CX, 01H
       MOV DX, PORTD
       MOV AL, 1000B
       CALL LED_CTRL
       
+      CMP ISR2_FLAG, 1
+      JE EMERGENCY
       MOV DX, PORTD
       MOV AL, 00H
       OUT DX, AL
       
+      CMP ISR2_FLAG, 1
+      JE EMERGENCY
       XOR BX, BX
       XOR CX, CX
       
+      CMP ISR2_FLAG, 1
+      JE EMERGENCY
       MOV ISR1_FLAG, 0
       JMP HERE
    
@@ -398,11 +415,12 @@ START:
       MOV CX, 02H
       MOV DX, PORTD
       MOV AL, 00H
+      MOV ISR1_FLAG, 0
+      MOV ISR2_FLAG, 0
       CALL LED_CTRL
 
       XOR BX, BX
       XOR CX, CX
-      MOV ISR1_FLAG, 0
       JMP HERE
    
    ; MODULE: Dispensing
@@ -411,7 +429,7 @@ START:
       MOV AL, 0BFH
       OUT DX, AL
       STI
-   
+      
       CALL INIT_LCD
       MOV AL, 0C4H
       CALL INST_CTRL
@@ -422,6 +440,7 @@ START:
       LEA SI, MSG2
       CALL DISPLAY_STR
       
+      MOV ISR2_FLAG, 0
       XOR CX, CX
    RET
    
@@ -488,6 +507,8 @@ START:
       OUT DX, AL
 
       LOCK_INPUT:
+	 CMP ISR2_FLAG, 1
+	 JE EMERGENCY
 	 MOV DX, PORTE
 	 IN AX, DX
 	 XOR AH, AH
