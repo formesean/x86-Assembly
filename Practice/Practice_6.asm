@@ -5,6 +5,10 @@ ORG 00000H
    PUSHF
    PUSH AX
    PUSH DX
+   HERE:
+   ;MOV AL, 0E2H		; FE = 1111 1110 || E2 = 1110 0010
+   ;OUT PIC2, AL
+   ;STI
    MOV ON_FLAG, 1
    POP DX 
    POP AX
@@ -20,9 +24,6 @@ ORG 01000H
    PUSHF
    PUSH AX
    PUSH DX
-   MOV AL, 0E2H		; FC = 1111 1100 || E1 = 1110 0010
-   OUT DX, AL
-   STI
    MOV PAUSE_FLAG, 1
    POP DX
    POP AX
@@ -38,8 +39,11 @@ ORG 02000H
    PUSHF
    PUSH AX
    PUSH DX
-   CMP PAUSE_FLAG, 1
-   JNE EXIT_MODE1
+   MOV AL, 0E4H		; E5 = 1110 0101
+   OUT PIC2, AL
+   STI
+   ;CMP PAUSE_FLAG, 1
+   ;JNE EXIT_MODE1
    MOV MODE_1, 1
    MOV MODE_2, 0
    MOV MODE_3, 0
@@ -58,6 +62,9 @@ ORG 03000H
    PUSHF
    PUSH AX
    PUSH DX
+   MOV AL, 0E8H		; EA = 1110 1001
+   OUT PIC2, AL
+   STI
    CMP PAUSE_FLAG, 1
    JNE EXIT_MODE2
    MOV MODE_1, 0
@@ -78,8 +85,11 @@ ORG 04000H
    PUSHF
    PUSH AX
    PUSH DX
-   CMP PAUSE_FLAG, 1
-   JNE EXIT_MODE3
+   MOV AL, 0F0H		; F2 = 1111 0010
+   OUT PIC2, AL
+   STI
+   ;CMP PAUSE_FLAG, 1
+   ;JNE EXIT_MODE3
    MOV MODE_1, 0
    MOV MODE_2, 0
    MOV MODE_3, 1
@@ -138,15 +148,16 @@ START:
    MOV DX, COM_REG2	; Configuring 8255 PPI 2 
    MOV AL, 10000011B
    OUT DX, AL
-   
-   MOV DX, PIC1 	; Configuring 8259
-   MOV AL, ICW1
-   OUT DX, AL
-   MOV DX, PIC2
+   	
+   MOV AL, ICW1		; Configuring 8259
+   OUT PIC1, AL
    MOV AL, ICW2
-   OUT DX, AL
+   OUT PIC2, AL
    MOV AL, ICW4
-   OUT DX, AL
+   OUT PIC2, AL
+   MOV AL, OCW1		; FE = 1111 1110 || E2 = 1110 0010
+   OUT PIC2, AL
+   STI
    
    MOV DX, COM_REGT	; Configuring 8253 Timer
    MOV AL, 00111000B
@@ -175,14 +186,11 @@ START:
    
    ;foreground routine
    HERE:
-   MOV AL, OCW1		; FC = 1111 1100 || E2 = 1110 0010
-   OUT DX, AL
-   STI
-   
    CMP ON_FLAG, 1
    JNE OFF_MODE
-   CMP PAUSE_FLAG, 1
-   JE PAUSE
+   ;CMP PAUSE_FLAG, 1
+   ;JNE RESET_PAUSE
+   ;MOV PAUSE_FLAG, 0
    ;CMP MODE_1, 1
    ;JE DEFAULT
    CMP MODE_2, 1
@@ -424,6 +432,9 @@ START:
       CALL DEL_250
       MOV AL, 00H
       OUT PORTA, AL
+      CMP PAUSE_FLAG, 1
+      JE PAUSE
+      MOV PAUSE_FLAG, 0
       INC SI
       CLC
       ROL AH, 1
@@ -441,9 +452,76 @@ START:
       MOV MODE_2, 0
       MOV MODE_3, 0
       JMP HERE
+      
+   RESET_PAUSE:
+      MOV PAUSE_FLAG, 0
+   RET
    
-   PAUSE:
+   PAUSE:	MOV AH, 11111110B
+   P2:
+      MOV AL, AH
+      OUT PORTB, AL
+      MOV AL, BYTE PTR CS:[SI] ; Get the character to print
+      OUT PORTA, AL
+      CMP ON_FLAG, 1
+      JNE OFF_MODE
+      MOV DX, PORTC
+      IN AL, DX
+      TEST AL, 01H
+      JZ OFF_MODE
+      CALL DEL_250
+      MOV AL, 00H
+      OUT PORTA, AL
+      IN AL, PORTC
+      CMP AL, 03H
+      JE P2
+      INC SI
+      CLC
+      ROL AH, 1
+      JC P2
+      CALL DELAY_500MS
+      MOV PAUSE_FLAG, 0
       JMP HERE
+      ; PRINT H4
+      F1_H4:
+      MOV SI, OFFSET FONT_H4
+      MOV AH, 11111110B
+      F2_H4:
+      MOV AL, AH
+      OUT PORTB, AL
+      MOV AL, BYTE PTR CS:[SI]
+      OUT PORTA, AL
+      
+      CMP ON_FLAG, 1
+      JNE OFF_MODE
+      
+      MOV DX, PORTC
+      IN AL, DX
+      TEST AL, 01H
+      JZ OFF_MODE
+      
+      CALL DEL_250
+      MOV AL, 00H
+      OUT PORTA, AL
+      INC SI
+      CLC
+      ROL AH, 1
+      JC F2_H4
+      
+      ; Moves COL
+      ;MOV BL, 00000001B
+      ;HOR:
+      ;MOV AL, 00000000B
+      ;OUT PORTB, AL
+      ;MOV AL, BL
+      ;OUT PORTA, AL
+      ;CALL DELAY_1S
+      ;ROL BL, 1
+      ;IN AL, PORTC
+      ;CMP AL, 03H
+      ;JE HOR
+      ;MOV PAUSE_FLAG, 0
+      ;JMP HERE
       
    DEL_250:	MOV CX, 35
    TIMER1:
